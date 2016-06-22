@@ -30,6 +30,7 @@ config =
     war:
         outputFile:'fileToDeploy.war'
         pathInclude:'deploy'
+        cleanGenerated:true
 ```
 
 * default
@@ -43,11 +44,13 @@ config =
     <th>war.pathInclude</th>
     <td>undefined</td>
   </tr>
+  <tr>
+    <th>war.cleanGenerated</th>
+    <td>false</td>
+  </tr>
 </table>
 
-## CHANGELOG
 
-* 1.0.0 (29 Sep 2013) - Initial release
 
 ## License
 

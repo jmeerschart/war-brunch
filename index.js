@@ -8,6 +8,7 @@ function WarBrunchPlugin(config){
     self.config = config;
     self.fileName =  (config.plugins.war || {}).outputFile || "ROOT.WAR";
     self.pathInclude =  (config.plugins.war || {}).pathInclude;
+    self.cleanGenerated =  (config.plugins.war || {}).cleanGenerated || false;
 }
 
 WarBrunchPlugin.prototype.brunchPlugin = true;
@@ -18,6 +19,10 @@ WarBrunchPlugin.prototype.brunchPlugin = true;
 WarBrunchPlugin.prototype.onCompile = function processZip() {
 
   var self = this;
+  if (!self.config.optimize){
+    return;
+  }
+
   var outputFile = './'+self.config.paths.public+'/' + self.fileName;
 
   var output = fs.createWriteStream(outputFile);
@@ -25,9 +30,7 @@ WarBrunchPlugin.prototype.onCompile = function processZip() {
   ///define folder to zip
     var pathToZip = './'+self.config.paths.public+'/';
 
-    if (!self.config.optimize){
-      return;
-    }
+
 
     var archive = Archiver.create('zip', {});
 
@@ -37,7 +40,9 @@ WarBrunchPlugin.prototype.onCompile = function processZip() {
     });
     //add event on close stream
     output.on('close', function() {
-      cleanup(pathToZip,self.fileName);
+      if (self.cleanGenerated){
+          cleanup(pathToZip,self.fileName);
+      }      
     });
     //bind outputstream
     archive.pipe(output);
@@ -61,7 +66,7 @@ function zipDir(pathToZip,archive,fileExept){
         if (fs.lstatSync(name).isDirectory()){
           archive.directory(name,files[i]);
         }else{
-          archive.append( name, { name: files[i]});
+          archive.append( fs.createReadStream(name), { name: files[i]});
         }
       }
   }

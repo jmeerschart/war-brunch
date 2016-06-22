@@ -1,6 +1,6 @@
 {
     "name" : "war-brunch",
-    "version" : "1.7.2",
+    "version" : "1.7.3",
     "description": "Adds war support to brunch.",
     "author": "Julien Meerschart",
     "repository": {
