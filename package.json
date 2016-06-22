@@ -1,0 +1,15 @@
+{
+    "name" : "war-brunch",
+    "version" : "1.7.0",
+    "private" : "true",
+    "description": "Adds war support to brunch.",
+    "author": "Julien Meerschart",
+    "repository": {
+    "type": "git",
+        "url": "git@github.com:jmeerschart/war-brunch.git"
+      },
+    "peerDependencies" : {
+        "brunch" : "~1.7",
+        "archiver":"~1.0.0"
+    }
+}
