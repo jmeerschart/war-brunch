@@ -3,18 +3,18 @@
 var Archiver = require('archiver');
 var fs = require("fs");
 
-
 function WarBrunchPlugin(config){
     var self=this;
     self.config = config;
     self.fileName =  (config.plugins.war || {}).outputFile || "ROOT.WAR";
-
+    self.pathInclude =  (config.plugins.war || {}).pathInclude;
 }
 
 WarBrunchPlugin.prototype.brunchPlugin = true;
 
-
-
+/**
+* onCompile phase
+*/
 WarBrunchPlugin.prototype.onCompile = function processZip() {
 
   var self = this;
@@ -42,20 +42,38 @@ WarBrunchPlugin.prototype.onCompile = function processZip() {
     //bind outputstream
     archive.pipe(output);
 
-    archive.bulk([
-      { expand: true, cwd: pathToZip, src: ['*'] }
-    ]);
-
+    zipDir(pathToZip,archive,self.fileName);
+    if (self.pathInclude){
+      zipDir(self.pathInclude,archive,self.fileName);
+    }
 
     archive.finalize();
-
 };
+/**
+* zip a folder
+*/
+function zipDir(pathToZip,archive,fileExept){
+  var files = fs.readdirSync(pathToZip);
+  for (var i in files){
+      var name = pathToZip + '/' + files[i];
+      //dont zip archive
+      if (name.indexOf(fileExept) == -1){
+        if (fs.lstatSync(name).isDirectory()){
+          archive.directory(name,files[i]);
+        }else{
+          archive.append( name, { name: files[i]});
+        }
+      }
+  }
+}
 
-//delete generated files
+
+/**
+* cleanup path except fileName
+**/
 function cleanup(pathToZip,fileName){
     var files = fs.readdirSync(pathToZip);
     for (var i in files){
-
         var name = pathToZip + '/' + files[i];
         //dont delete archive
         if (name.indexOf(fileName) == -1){
@@ -67,7 +85,9 @@ function cleanup(pathToZip,fileName){
         }
     }
 }
-
+/**
+* delete folder recursivly
+*/
 function deleteFolderRecursive (path) {
   if( fs.existsSync(path) ) {
     fs.readdirSync(path).forEach(function(file,index){
