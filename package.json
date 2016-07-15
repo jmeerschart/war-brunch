@@ -11,7 +11,7 @@
         "archiver": "~1.0.0"
      },
     "peerDependencies" : {
-        "brunch" : "~1.7",
+        "brunch" : "^1.7",
         "archiver":"~1.0.0"
     }
 }
